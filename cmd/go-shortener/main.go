@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -52,7 +51,7 @@ func shorten(w http.ResponseWriter, r *http.Request) {
 
 	key := util.EncodeBase62(randInt)
 
-	if err := rdb.Set(context.Background(), key, req.URL, time.Hour*6).Err(); err != nil {
+	if err := rdb.Set(r.Context(), key, req.URL, time.Hour*6).Err(); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "internal db error")
 		return
@@ -75,7 +74,7 @@ func shorten(w http.ResponseWriter, r *http.Request) {
 func getShorten(w http.ResponseWriter, r *http.Request) {
 	code := r.PathValue("code")
 
-	url, err := rdb.Get(context.Background(), code).Result()
+	url, err := rdb.Get(r.Context(), code).Result()
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "specified key does not exists '%s', err: %v", code, err)
