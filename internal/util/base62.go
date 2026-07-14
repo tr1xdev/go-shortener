@@ -4,7 +4,7 @@ import "strings"
 
 const base62Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-func encodeBase62(num int64) string {
+func EncodeBase62(num int64) string {
 	if num == 0 {
 		return string(base62Chars[0]) // 'a'
 	}

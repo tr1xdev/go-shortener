@@ -5,7 +5,7 @@ import (
 	"math/big"
 )
 
-func randomInt(maxExclusive int64) (int64, error) {
+func RandomInt(maxExclusive int64) (int64, error) {
 	n, err := rand.Int(rand.Reader, big.NewInt(maxExclusive))
 	if err != nil {
 		return 0, err
