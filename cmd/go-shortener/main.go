@@ -13,7 +13,13 @@ import (
 
 func main() {
 	rdb := database.NewRedis(os.Getenv("REDIS_ADDR"), os.Getenv("REDIS_PASSWORD"), 1)
-	db := database.NewMongoDB(os.Getenv("MONGO_URI"), "go_shortener")
+	client, db := database.NewMongoDB(os.Getenv("MONGO_URI"), "go_shortener")
+
+	defer func() {
+		if err := client.Disconnect(context.Background()); err != nil {
+			log.Printf("Error disconnecting from MongoDB: %v", err)
+		}
+	}()
 
 	if err := db.CreateCollection(context.Background(), "urls"); err != nil {
 		log.Fatalf("Failed to create collecion: %v", err)
