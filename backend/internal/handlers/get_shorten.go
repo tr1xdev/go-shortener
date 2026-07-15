@@ -1,10 +1,8 @@
 package handlers
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -22,10 +20,8 @@ func (h *Handler) GetShorten(w http.ResponseWriter, r *http.Request) {
 
 	url, err := h.Rdb.Get(r.Context(), code).Result()
 	if err == nil {
-		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(GetShortenResponse{URL: url}); err != nil {
-			log.Printf("failed to serialize JSON: %v", err)
-		}
+		// redirect to original url
+		http.Redirect(w, r, url, http.StatusFound)
 		return
 	}
 
@@ -51,8 +47,6 @@ func (h *Handler) GetShorten(w http.ResponseWriter, r *http.Request) {
 	// save to redis for future requests
 	_ = h.Rdb.Set(r.Context(), code, result.OriginalURL, time.Hour*6).Err()
 
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(GetShortenResponse{URL: result.OriginalURL}); err != nil {
-		log.Printf("failed to serialize JSON: %v", err)
-	}
+	// redirect to original url
+	http.Redirect(w, r, result.OriginalURL, http.StatusFound)
 }

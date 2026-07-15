@@ -22,12 +22,12 @@ func main() {
 	}()
 
 	if err := db.CreateCollection(context.Background(), "urls"); err != nil {
-		log.Fatalf("Failed to create collecion: %v", err)
+		log.Fatalf("Failed to create collection: %v", err)
 	}
 
-	mux := api.SetupRoutes(rdb, db)
+	handler := api.SetupRoutes(rdb, db)
 
 	fmt.Println("app start on http://localhost:8181")
 
-	log.Fatal(http.ListenAndServe(":8181", mux))
+	log.Fatal(http.ListenAndServe(":8181", handler))
 }
