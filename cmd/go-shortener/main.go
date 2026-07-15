@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,6 +14,10 @@ import (
 func main() {
 	rdb := database.NewRedis(os.Getenv("REDIS_ADDR"), os.Getenv("REDIS_PASSWORD"), 1)
 	db := database.NewMongoDB(os.Getenv("MONGO_URI"), "go_shortener")
+
+	if err := db.CreateCollection(context.Background(), "urls"); err != nil {
+		log.Fatalf("Failed to create collecion: %v", err)
+	}
 
 	mux := api.SetupRoutes(rdb, db)
 
