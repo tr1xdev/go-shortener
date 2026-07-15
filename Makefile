@@ -1,4 +1,4 @@
-.PHONY: lint fmt fmt-fix test build build-check run docker-build docker-up docker-down clean ci
+.PHONY: lint fmt fmt-fix test build build-check run run-back front-install front-dev docker-build docker-up docker-down clean ci
 
 # check code with go vet
 lint:
@@ -30,7 +30,19 @@ build-check:
 
 # run the app locally (without docker)
 run:
+	$(MAKE) -j2 run-back front-dev
+
+# run backend locally
+run-back:
 	go run ./backend/cmd/go-shortener
+
+# install frontend dependencies
+front-install:
+	cd frontend && npm install
+
+# run frontend development server
+front-dev:
+	cd frontend && npm run dev
 
 # build docker image
 docker-build:

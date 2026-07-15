@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { useShortener } from './use-shortener';
 
 export default function HomePage() {
@@ -6,11 +6,11 @@ export default function HomePage() {
   const [shortKey, setShortKey] = useState<string | null>(null);
   const { shorten, loading, error } = useShortener();
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    const result = await shorten(url);
-    if (result) setShortKey(result.key);
-  };
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const result = await shorten(url);
+      if (result) setShortKey(result.key);
+    };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-gray-50">
@@ -32,7 +32,7 @@ export default function HomePage() {
             disabled={loading}
             className="rounded-lg bg-blue-600 px-6 py-2 text-white font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
           >
-            {loading ? '...' : 'Shorten'}
+            {loading ? '...' : 'Shorten URL'}
           </button>
         </form>
 
