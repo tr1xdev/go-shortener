@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/redis/go-redis/v9"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type GetShortenResponse struct {
@@ -18,24 +21,38 @@ func (h *Handler) GetShorten(w http.ResponseWriter, r *http.Request) {
 	code := r.PathValue("code")
 
 	url, err := h.Rdb.Get(r.Context(), code).Result()
-	if err != nil {
-		if errors.Is(err, redis.Nil) {
+	if err == nil {
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(GetShortenResponse{URL: url}); err != nil {
+			log.Printf("failed to serialize JSON: %v", err)
+		}
+		return
+	}
+
+	if !errors.Is(err, redis.Nil) {
+		// any other error (network issue, timeout, redis unavailable, etc.)
+		fmt.Printf("redis error: %v", err)
+	}
+
+	var result URL
+	filter := bson.D{{Key: "short_code", Value: code}}
+	if err := h.db.Collection("urls").FindOne(r.Context(), filter).Decode(&result); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			// key does not exists
 			http.Error(w, "short link not found", http.StatusNotFound)
 			return
 		}
-		// any other error (network issue, timeout, redis unavailable, etc.)
-		fmt.Printf("redis error: %v", err)
+		// any other error
+		fmt.Printf("mongo error: %v", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	var payload GetShortenResponse
-	payload.URL = url
+	// save to redis for future requests
+	_ = h.Rdb.Set(r.Context(), code, result.OriginalURL, time.Hour*6).Err()
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(payload); err != nil {
+	if err := json.NewEncoder(w).Encode(GetShortenResponse{URL: result.OriginalURL}); err != nil {
 		log.Printf("failed to serialize JSON: %v", err)
-		return
 	}
 }
