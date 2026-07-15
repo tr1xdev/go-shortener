@@ -16,10 +16,10 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27018
 
   app:
-    build: .
+    build:
+      context: ./backend
     ports:
       - "8181:8181"
     depends_on:

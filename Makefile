@@ -2,35 +2,35 @@
 
 # check code with go vet
 lint:
-	go vet ./...
+	go vet ./backend/...
 
 # check formatting (fails if files are not formatted)
 fmt:
-	@if [ -n "$$(gofmt -l .)" ]; then \
+	@if [ -n "$$(gofmt -l ./backend)" ]; then \
 		echo "Code is not formatted, run 'make fmt-fix'"; \
-		gofmt -l .; \
+		gofmt -l ./backend; \
 		exit 1; \
 	fi
 
 # auto-fix formatting
 fmt-fix:
-	gofmt -w .
+	gofmt -w ./backend
 
 # run all tests
 test:
-	go test ./... -v
+	go test ./backend/... -v
 
 # build a real binary (useful for running it directly)
 build:
-	go build -o app ./cmd/go-shortener
+	go build -o backend/app ./backend/cmd/go-shortener
 
 # verify the code compiles, without leaving a binary behind
 build-check:
-	go build -o /dev/null ./cmd/go-shortener
+	go build -o /dev/null ./backend/cmd/go-shortener
 
 # run the app locally (without docker)
 run:
-	go run ./cmd/go-shortener
+	go run ./backend/cmd/go-shortener
 
 # build docker image
 docker-build:
@@ -46,7 +46,7 @@ docker-down:
 
 # remove built binary
 clean:
-	rm -f app
+	rm -f backend/app
 
 # run everything CI does, in order
 ci: lint fmt test build-check
