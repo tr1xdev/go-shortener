@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-func NewMongoDB(uri, dbName string) *mongo.Database {
+func NewMongoDB(uri, dbName string) (*mongo.Client, *mongo.Database) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -22,5 +22,5 @@ func NewMongoDB(uri, dbName string) *mongo.Database {
 		log.Fatalf("could not ping MongoDB: %v", err)
 	}
 
-	return client.Database(dbName)
+	return client, client.Database(dbName)
 }
