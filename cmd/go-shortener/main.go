@@ -12,7 +12,9 @@ import (
 
 func main() {
 	rdb := database.NewRedis(os.Getenv("REDIS_ADDR"), os.Getenv("REDIS_PASSWORD"), 1)
-	mux := api.SetupRoutes(rdb)
+	db := database.NewMongoDB(os.Getenv("MONGO_URI"), "go_shortener")
+
+	mux := api.SetupRoutes(rdb, db)
 
 	fmt.Println("app start on http://localhost:8181")
 
