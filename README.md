@@ -1,6 +1,6 @@
 # go-shortener
 
-A simple URL shortener.
+A simple URL shortener built as a portfolio project.
 
 ## Stack
 
@@ -10,14 +10,24 @@ A simple URL shortener.
 * MongoDB
 * Docker
 
-## Run
+## Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/tr1xdev/go-shortener.git
+cd go-shortener
+```
+
+### 2. Build and start services
 
 ```bash
 docker compose up --build -d
-
 ```
 
-The app will be available at `http://localhost:5173`.
+### 3. Access the application
+
+Open [http://localhost:5173](http://localhost:5173).
 
 ## API
 
@@ -27,22 +37,28 @@ The app will be available at `http://localhost:5173`.
 curl -X POST http://localhost:8181/shorten \
   -H "Content-Type: application/json" \
   -d '{"url":"https://example.com"}'
-
 ```
 
 **Get the original URL**
 
 ```bash
 curl http://localhost:8181/shorten/{code}
-
 ```
 
-## Dev
+## Development
+
+Run without Docker:
 
 ```bash
-make ci      # lint + test + build check
-make run     # run without docker
-
+make run
 ```
 
----
+Run lint, tests, and a build check:
+
+```bash
+make ci
+```
+
+## License
+
+[MIT](LICENSE)
