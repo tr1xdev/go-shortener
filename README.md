@@ -1,6 +1,6 @@
 # go-shortener
 
-A simple URL shortener built as a portfolio project.
+A simple, fast URL shortener.
 
 ## Stack
 
